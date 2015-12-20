@@ -1,0 +1,26 @@
+#include <stdio.h>
+#include <dirent.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <limits.h>
+int
+main(int argc, char * argv[])
+{
+    DIR *d = opendir(argv[1]);
+    long long ans = 0;
+    struct dirent *dd;
+    while ((dd = readdir(d))) {
+        struct stat stb;
+        char p[PATH_MAX];
+        snprintf(p, sizeof(p), "%s/%s", argv[1], dd->d_name);
+        if (lstat(p, &stb) < 0) {
+            continue;
+        }
+        if (S_ISREG(stb.st_mode)) {
+            ans += stb.st_size;
+        }
+    }
+    closedir(d);
+    printf("%lld", ans);
+    return 0;
+}

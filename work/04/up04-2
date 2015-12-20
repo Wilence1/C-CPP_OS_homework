@@ -1,0 +1,17 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+void
+normalize_path(char *buf)
+{
+    long len = strlen(buf);
+    int j = 0;
+    for (int i = 0; i < len; i++) {
+        buf[j] = buf[i];
+        if (i < len - 1 && buf[i] == '/' && buf[i + 1] == '/') {
+            j--;
+        }
+        j++;
+    }
+    buf[j] = '\0';
+}

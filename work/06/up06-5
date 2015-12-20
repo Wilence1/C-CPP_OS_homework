@@ -1,0 +1,39 @@
+#include <stdio.h>
+#include <stdlib.h>
+struct RandomOperations;
+typedef struct RandomGenerator
+{
+    const struct RandomOperations *ops;
+    int res;
+} RandomGenerator;
+typedef struct RandomOperations
+{
+    void (*destroy) (RandomGenerator *);
+    int (*next) (RandomGenerator *);
+} RandomOperations;
+int
+next (RandomGenerator *x)
+{
+    int next = x->res;
+    next = next * 1103515245 + 12345;
+    x->res = (next % ((unsigned int)1 << 31));
+    return x->res;
+}
+void
+destroy (RandomGenerator * x)
+{
+    free(x);
+}
+const RandomOperations el =
+{
+    destroy, next
+};
+
+RandomGenerator *
+random_create(int seed)
+{
+    RandomGenerator *val = calloc(1, sizeof(*val));
+    val->ops = &el;
+    val->res = seed;
+    return val;
+}

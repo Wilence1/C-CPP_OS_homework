@@ -1,0 +1,13 @@
+#include<stdio.h>
+int findmax(int *a, int n)
+{
+
+    int imax = 0;
+    int i;
+    for(i = 0; i < n; i++)
+    {
+        if(*(a + i) > *(a + imax))
+            imax = i;
+    }
+    return imax;
+}

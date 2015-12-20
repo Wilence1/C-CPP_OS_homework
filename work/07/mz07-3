@@ -1,0 +1,15 @@
+#include <stdio.h>
+#include <sys/wait.h>
+#include <unistd.h>
+int main(void)
+{
+    char str[1000000];
+    unsigned int a, b;
+    unsigned int ans = 0;
+    while(fgets(str, 1000000, stdin))
+    {
+        sscanf(str,"%x-%x", &a, &b);
+        ans += b - a;
+    }
+    printf("%u\n", ans);
+}

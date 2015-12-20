@@ -1,0 +1,53 @@
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <assert.h>
+int
+findsub(const char *string, const char *str, long len, long start)
+{
+    if (!len) return 0;
+    const char *begin_text = string + start;
+    if (start >= strlen(string)) {
+        return -1;
+    }
+    while (*begin_text) {
+        const char *begin = str;
+        const char *text = begin_text;
+        while (*begin != *(str + len) && *text && *text == *begin) {
+            begin++;
+            text++;
+        }
+        if (*begin == *(str + len)) {
+            return begin_text - string;
+        }
+        begin_text++;
+    }
+    return -1;
+}
+int
+mysubstr(const char *str, const char *string)
+{
+    const char *elem = str;
+    if (!strlen(str) && !strlen(string)) {
+        return 0;
+    }
+    while (*elem && *elem != '*') {
+        elem++;
+    }
+    if(*elem) {
+        if(strlen(str) == 1 && !strlen(string)) {
+            return 0;
+        }
+        int p1 = findsub(string, str, elem - str, 0);
+        if (p1 < 0) {
+            return -1;
+        }
+        int p2 = findsub(string, elem + 1, strlen(str) + str - elem - 1, elem - str + p1);
+        if (p2 < 0) {
+            return -1;
+        }
+        return p1;
+    } else {
+        return findsub(string, str, strlen(str), 0);
+    }
+}

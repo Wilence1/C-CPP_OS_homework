@@ -1,0 +1,64 @@
+#include <stdio.h>
+#include <dirent.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <limits.h>
+#include <ctype.h>
+enum { SIZE = 1022 };
+int
+is_in(int data, int *a, int size)
+{
+    for (int i = 0; i < size; i++) {
+        if (a[i] == data) {
+            return 1;
+        }
+    }
+    return 0;
+}
+int
+main(int argc, char * argv[])
+{
+    int uid, operation;
+    int a[SIZE];
+    int inf[SIZE];
+    int x = 0;
+    char s[SIZE];
+    fgets(s, SIZE, stdin);
+    sscanf(s, "%d ", &uid);
+    fgets(s, SIZE, stdin);
+    int i = 0;
+    int k = 0;
+    while (sscanf(s + k, "%d%n", &a[i], &x) > 0) {
+        k += x;
+        i++;
+    }
+    fgets(s, SIZE, stdin);
+    sscanf(s, "%o ", &operation);
+    while (fgets(s, SIZE, stdin) != NULL) {
+        x = 0;
+        sscanf(s,"%d%d%o%n", &inf[0], &inf[1], &inf[2], &x);
+        while(isspace(s[x])) {
+            x++;
+        }
+        char str[SIZE];
+        strcpy(str, s + x);
+        k = strlen(str) - 1;
+        while (isspace(str[k])) {
+            k--;
+        }
+        str[k + 1] = '\0';
+        if(uid == inf[0]) {
+            if((operation & (inf[2] >> 6)) == operation) {
+                printf("%s\n", str);
+            }
+        } else if (is_in(inf[1], a, i)) {
+            if ((operation & (inf[2] >> 3)) == operation) {
+                printf("%s\n", str);
+            }
+        } else {
+            if ((operation & inf[2]) == operation) {
+                printf("%s\n", str);
+            }
+        }
+    }
+}

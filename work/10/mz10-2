@@ -1,0 +1,46 @@
+#include <stdio.h>
+#include <unistd.h>
+#include <stdbool.h>
+#include <signal.h>
+#include <stdlib.h>
+#include <math.h>
+volatile long long int lp = 0;
+int count = 0;
+void sigint_h(int s) {
+  
+    if (++count == 4) {
+        exit(0);
+    } else {
+   
+        printf("%lld\n", lp);
+        fflush(stdout);
+    }
+}
+void sigterm_h(int signum) {
+    exit(0);
+}
+int main(void) {
+    
+    signal(SIGINT, sigint_h);
+    signal(SIGTERM, sigterm_h);
+    long long low, high;
+    scanf("%lld%lld", &low, &high);
+    printf("%d\n", getpid());
+    fflush(stdout);
+          
+        for(long long i = low; i < high; i++) {
+            int err = 0;
+            for(long long j = 2; j * j <= i; j++) {
+                if(!(i % j)) {
+                    err = 1;
+                    break;
+                }
+            }
+            if(!err) {
+                lp = i;
+            }
+        } 
+    printf("-1\n");
+    fflush(stdout);
+    return 0;
+}

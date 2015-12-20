@@ -1,0 +1,46 @@
+#include <stdio.h>
+#include <string.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/uio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+int 
+main(int argc, char *argv[])
+{
+    int fd = open(argv[1], O_RDONLY);
+    long long offset = strtod(argv[2], NULL);
+    struct stat stb;
+    long long ans = 0;
+    long long sum_sz = 0;
+    lstat(argv[1], &stb);
+    if (!stb.st_size) {
+        printf("0\n0");
+        return 0;
+    }
+    unsigned short sz;
+    long long off_set;
+    int count;
+    lseek(fd, offset, SEEK_SET);
+    while (1) {
+        count = sizeof(unsigned short);
+        while (count) {
+            count -= read(fd , (char *)&sz + sizeof(unsigned short) - count, count);
+        } 
+        lseek(fd, sz, SEEK_CUR);
+        count = sizeof(long long);
+        while (count) {
+            count -= read(fd , (char *)&off_set + sizeof(long long) - count, count);
+        }
+        sum_sz += sz;
+        ans++;
+        offset += off_set; 
+        if(!off_set) {
+            break;
+        }
+        lseek(fd, offset, SEEK_SET);
+    }
+    close(fd);
+    printf("%lld\n%lld", ans, sum_sz);
+}

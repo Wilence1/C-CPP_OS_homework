@@ -1,0 +1,71 @@
+#include<fcntl.h>
+#include<sys/stat.h>
+#include<sys/types.h>
+#include<unistd.h>
+#include<stdlib.h>
+#include<stdio.h>
+struct Data
+{
+    int x;
+    long long y;
+};
+enum { SIZE = 12 };
+struct Data
+mread(int fd)
+{
+    int count = SIZE;
+    struct Data elem;
+    while (count) {
+        count -= read(fd, (char *)&elem + SIZE - count, count);
+    }
+    return elem;
+}
+void
+mwrite(int fd, struct Data elem)
+{
+    int count = SIZE;
+    while (count) {
+        count -= write(fd, (char *)&elem + SIZE - count, count);
+    }
+}
+int
+main(int argc, char *argv[])
+{
+    int flags = O_RDWR;
+    int fd = open(argv[1], flags);
+    int i = 0;
+    int end = 0;
+    int count = 0;
+    struct Data elem;
+    while (1) {
+        count = SIZE;
+        while (count) {
+            int f = count;
+            count -= read(fd, (char *)&elem + SIZE - count, count);
+            if (f == count) {
+                end = 1;
+                break;
+            }
+        }
+        i++;
+        if (end) {
+            break;
+        }
+    }
+    i--;
+    lseek(fd, 0, SEEK_SET);
+    struct Data tmp;
+    for(int t = 0; t < i / 2 + i % 2; t++) {
+        elem = mread(fd);
+        elem.y += elem.x * strtod (argv[2], NULL);
+        lseek(fd, SIZE * (i - t - 1), SEEK_SET);
+        tmp = mread(fd);
+        tmp.y += tmp.x * strtod (argv[2], NULL);
+        lseek(fd, SIZE * (i - t - 1), SEEK_SET);
+        mwrite(fd, elem);
+        lseek(fd, SIZE * t, SEEK_SET);
+        mwrite(fd, tmp);
+    }
+    close(fd);
+    return 0;
+}

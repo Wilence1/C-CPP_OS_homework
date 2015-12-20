@@ -1,0 +1,20 @@
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <stdlib.h>
+int
+exe(const char *cmd)
+{
+    if(!fork()) {
+        execlp(cmd, cmd, NULL);
+        exit(1);
+    }
+    int st;
+    wait(&st);
+    return WIFEXITED(st) && !WEXITSTATUS(st);
+}
+int
+main(int argc, const char * argv[])
+{
+    return !((exe(argv[1]) || exe(argv[2])) && exe(argv[3]));
+}

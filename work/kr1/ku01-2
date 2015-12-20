@@ -1,0 +1,24 @@
+#include <stdio.h>
+#include <string.h>
+void common_dir(const char *d1, const char *d2, char *out)
+{
+    const char *id1 = d1;
+    const char *id2 = d2;
+    while (*id1 && *id1 == *id2) {
+        id1++;
+        id2++;
+    }
+    if ((*id1 == '\0' && *id2 == '/') || (*id2 == '\0' && *id1 == '/') || (*id1 == '\0' && *id2 == '\0')) {
+        strncpy(out, d1, id1 - d1);
+        out[id1 - d1] = 0;
+    } else {
+        while (*id2 != '/') {
+            id2--;
+        }
+        if(id2 - d2) {
+            id2--;
+        }
+        strncpy(out, d2, id2 - d2 + 1);
+        out[id2 - d2 + 1] = 0;
+    }
+}

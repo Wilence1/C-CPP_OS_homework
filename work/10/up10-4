@@ -1,0 +1,63 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <signal.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <sys/types.h>
+int main(int argc, char **argv) 
+{
+    int fd[2];
+    pipe(fd);
+    int pid2;
+    if(!(fork())) {
+        close(fd[1]);
+        int x = 0;
+        long long sum = 0;
+        int check;
+        int target;
+        read(fd[0], &target, sizeof(target));
+        sscanf(argv[3], "%d", &check);
+        while(read(fd[0], &x, sizeof(x)) > 0) {
+            sum += x;
+            fflush(stdout);
+            if(sum > check) {
+                printf("-1\n");
+                fflush(stdout);
+                kill(target, SIGTERM);
+                return 0;
+            }
+        }
+        printf("%lld\n", sum);
+        fflush(stdout);
+        return 0;
+    }
+    if(!fork()) {
+        if(!(fork())) {
+            close(fd[0]);
+            pid2 = getpid();
+            write(fd[1], &pid2, sizeof(pid2));
+            FILE *f = fopen(argv[1], "r");
+            int mod;
+            sscanf(argv[2], "%d", &mod);
+            long long ans;
+            while(fscanf(f, "%lld", &ans) > 0) {
+                ans = (ans * ans ) % mod;
+                write(fd[1], &ans, sizeof(ans));
+            }
+            close(fd[1]);
+            fclose(f);
+            return 0;
+        }
+        close(fd[0]);
+        close(fd[1]);
+        wait(NULL);
+        return 0;
+    }
+    close(fd[0]);
+    close(fd[1]);
+    wait(NULL);
+    wait(NULL);
+    printf("0\n");
+    fflush(stdout);
+    return 0;
+}

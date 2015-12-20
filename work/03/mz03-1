@@ -1,0 +1,17 @@
+#include<stdio.h>
+#include<stdlib.h>
+int main(int argc, char *argv[])
+{
+    double ost = strtod(argv[1], NULL);
+    int dep = strtod(argv[2], NULL);
+    int kre = strtod(argv[3], NULL);
+    for(int i = 4; i < argc; i++){
+        ost = ost + strtod(argv[i], NULL);
+        if (ost >= 0){
+            ost += ost * dep / 100;
+        } else {
+            ost += ost * kre / 100;
+        }
+    }
+    printf("%.10g\n", ost);
+}

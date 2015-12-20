@@ -1,0 +1,16 @@
+#include <stdlib.h>
+struct Item
+{
+    struct Item *next;
+    struct Info info;
+};
+struct Item *list = NULL;
+void solve(void)
+{
+    for(int i = 0; i < arr_size; i++){
+        struct Item *elem = calloc(1, sizeof(*elem));
+        elem->info = arr[i];
+        elem->next = list;
+        list = elem;
+    }
+}

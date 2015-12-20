@@ -1,0 +1,36 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <sys/types.h>
+#include <fcntl.h>
+int
+main(int argc, char **argv)
+{
+    int pin = 0;
+    for (int i = 0; i < argc - 1; i++) {
+        int fd[2];
+        int com = i + 1;
+        if (i != argc - 2) {
+            pipe(fd);
+        }
+        if (!fork()) {
+            dup2(pin, 0);
+            if(pin) {
+                close(pin);
+            }
+            if (i != argc - 2) {
+                dup2(fd[1], 1);
+                close(fd[1]);
+            }
+            execlp(argv[com], argv[com], NULL);
+            _exit(-1);
+        }
+        pin = fd[0];
+        close(fd[1]);
+    }
+    for (int i = 0; i < argc - 1; i++) {
+        wait(NULL);
+    }
+}

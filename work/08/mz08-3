@@ -1,0 +1,39 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <time.h>
+#include <sys/wait.h>
+int main(int argc, const char * argv[])
+{
+    int st[2];
+    pipe(st);
+    time_t t = time(NULL);
+    write(st[1], &t, sizeof(t));
+    write(st[1], &t, sizeof(t));
+    write(st[1], &t, sizeof(t));
+    if (!fork()) {
+        if (!fork()) {
+            if(!fork()) {
+                time_t a3;
+                read(st[0], &a3, sizeof(a3));
+                struct tm *sec = localtime(&a3);
+                printf("S:%02d\n", sec->tm_sec);
+                exit(0);
+            }
+            wait(NULL);
+            time_t a2;
+            read(st[0], &a2, sizeof(a2));
+            struct tm *min = localtime(&a2);
+            printf("M:%02d\n", min->tm_min);
+            exit(0);
+        }
+        wait(NULL);
+        time_t a1;
+        read(st[0], &a1, sizeof(a1));
+        struct tm *hour = localtime(&a1);
+        printf("H:%02d\n", hour->tm_hour);
+        exit(0);
+    }
+    wait(NULL);
+    return 0;
+}

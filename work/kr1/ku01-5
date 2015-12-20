@@ -1,0 +1,60 @@
+#include <stdio.h>
+#include <stdio.h>
+#include <string.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/uio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <dirent.h>
+#include <limits.h>
+int check(char *name, char *suff)
+{
+    int lenname = strlen(name);
+    int lensuf = strlen(suff);
+    if(lensuf > lenname) {
+        return 0;
+    }
+    return !strcmp(name + lenname - lensuf, suff);
+}
+int 
+main(int argc, char * argv[]) 
+{
+    char *path = argv[1];
+    long long max_size = strtod(argv[2], NULL);
+    char *suff = argv[3];
+    DIR *d = opendir(path);
+    if(d <= 0) {
+        return 0;
+    }
+    struct dirent *dd;
+    struct stat st;
+    char name[PATH_MAX];
+    long long size = 0;
+    long long max_size_ex = -1;
+    char ans[PATH_MAX];
+    while ((dd = readdir(d))) {
+        snprintf(name, sizeof(name), "%s/%s", path, dd->d_name);
+        if(lstat(name, &st) < 0) {
+            continue;
+        }
+        if(S_ISREG(st.st_mode)) {
+            size += st.st_size;
+            if(check(dd->d_name, suff)) {
+                if(max_size_ex < st.st_size) {
+                    max_size_ex = st.st_size;
+                    snprintf(ans, sizeof(ans), "%s", dd->d_name);
+                } else if (max_size_ex == st.st_size) {
+                    if(strcmp(ans, dd->d_name) > 0) {
+                        snprintf(ans, sizeof(ans), "%s", dd->d_name);
+                    }
+                }
+            }
+        }
+    }
+    closedir(d);
+    if (max_size_ex != -1 && size > max_size) {
+        printf("%s\n", ans);
+    }
+}

@@ -1,0 +1,37 @@
+#include<stdio.h>
+#include<time.h>
+#include<stdlib.h>
+#include<math.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/uio.h>
+#include <unistd.h>
+int
+main(int argc, char ** argv)
+{
+    int fd = open(argv[1], O_RDONLY);
+    lseek(fd, 0, SEEK_END);
+    while (1) {
+        unsigned short n;
+        if (lseek(fd, -sizeof(n), SEEK_CUR)<0) {
+            break;
+        }
+        read(fd, &n, sizeof(n));
+        lseek(fd, -2, SEEK_CUR);
+        long double res = 1;
+        int i;
+        for(i = 0; i < n; i++) {
+            double el;
+            lseek(fd, -sizeof(el), SEEK_CUR);
+            read(fd, &el, sizeof(el));
+            lseek(fd, -sizeof(el), SEEK_CUR);
+            res *= el;
+        }
+        if(!n) {
+            res = 0;
+        }
+        printf("%.10g\n", (double)powl(res, 1.0L/n));
+    }
+    close(fd);
+}

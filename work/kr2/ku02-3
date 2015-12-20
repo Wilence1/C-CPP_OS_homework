@@ -1,0 +1,46 @@
+#include <stdio.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/wait.h>
+#include <stdlib.h>
+enum { SIZE = 1 << 20 };
+int
+main(int argc, char * argv[]) 
+{
+    FILE *t = fopen(argv[1], "r");
+    int *inf = calloc(SIZE, sizeof(*inf));
+    for (int i = 0; i < SIZE; i++) {
+        inf[i] = -1;
+    }
+    char str[1024];
+    unsigned long int begin, end;
+    while (fgets(str, sizeof(str), t)) {
+        char s[16];
+        if(sscanf(str, "%lx-%lx %s", &begin, &end, s)!= 3) {
+            continue;
+        }
+        int right = 0;
+        for (int i = 0; i < 3; i++) {
+            if (s[i] != '-') {
+                right++;
+            }
+            right <<= 1;
+        }
+        right >>= 1;
+        for (unsigned int i = begin; i < end; i++) {
+            inf[i >> 12] = right;
+        }
+    }
+    fclose(t);
+    unsigned long int adr;
+    unsigned int access;
+    while (scanf("%lx%o", &adr, &access) == 2) {
+        if (inf[adr >> 12] == -1) {
+            printf("0\n");
+        } else if ((inf[adr >> 12] & access) == access) {
+            printf("1\n");
+        } else {
+            printf("0\n");
+        }       
+    }
+}

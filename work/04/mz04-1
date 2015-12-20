@@ -1,0 +1,66 @@
+#include<stdio.h>
+#include<stdlib.h>
+int main(int argc, char *argv[])
+{
+    for(int j = 1; j < argc; j++)
+    {
+        int q = strtod(argv[j], NULL);
+        int a[3];
+        int r = 0;
+        while(q)
+        {
+            a[r] = q % 10;
+            r++;
+            q = q / 10;
+        }
+        if(r == 2)
+        {
+            printf("---");
+        }
+        if(r == 1)
+        {
+            printf("------");
+        }
+        if(r == 0)
+        {
+            printf("---------");
+        }
+        for(int i = r - 1; i > -1; i--)
+        {
+            int x = a[i];
+            if(x == 0)
+            {
+                printf("---");
+            }
+            if(x == 1)
+            {
+                printf("--x");
+            }
+            if(x == 2)
+            {
+                printf("-w-");
+            }
+            if(x == 3)
+            {
+                printf("-wx");
+            }
+            if(x == 4)
+            {
+                printf("r--");
+            }
+            if(x == 5)
+            {
+                printf("r-x");
+            }
+            if(x == 6)
+            {
+                printf("rw-");
+            }
+            if(x == 7)
+            {
+                printf("rwx");
+            }  
+        }
+        printf("\n");
+    }
+}

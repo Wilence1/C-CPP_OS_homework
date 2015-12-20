@@ -1,0 +1,36 @@
+#include<stdio.h>
+#include<string.h>
+#include<stdio.h>
+#include<fcntl.h>
+#include<sys/types.h>
+#include<sys/stat.h>
+#include<limits.h>
+#include<assert.h>
+struct MyFile
+{
+    int fd; 
+    int size; 
+    char *buf; 
+};
+int mygetc(struct MyFile *f)
+{
+    unsigned tmp;
+    static int buf_size = 0;
+    static int pos = 0;
+    if(buf_size == 0) {
+        pos = 0;
+        while (buf_size != f->size) {
+            int r = read(f->fd, f->buf + buf_size, f->size - buf_size);
+            if(r == 0 || r == -1)
+                break;
+            buf_size += r;
+        }
+    }
+    if(buf_size) {
+        tmp = (unsigned int)(unsigned char)(f->buf)[pos];
+        pos++;
+        buf_size--;
+        return (int)tmp;
+    }
+    return (int)EOF;
+}

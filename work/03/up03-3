@@ -1,0 +1,47 @@
+#include<fcntl.h>
+#include<sys/stat.h>
+#include<sys/types.h>
+#include<unistd.h>
+#include<stdlib.h>
+#include<stdio.h>
+struct node
+{
+    int key;
+    int left_idx;
+    int right_idx;
+};
+enum { SIZE = 12 };
+struct node
+mread(int place, int fd)
+{
+    lseek(fd, place * SIZE, SEEK_SET);
+    ssize_t count = SIZE;
+    struct node elem;
+    while (count) {
+        count -= read(fd, (char *)&elem + SIZE - count, count);
+    }
+    return elem;
+}
+void
+trace(int place, int fd)
+{
+    struct node elem = mread(place, fd);
+    if (elem.right_idx) {
+        trace(elem.right_idx, fd);
+    }
+    printf("%d ", elem.key);
+    if (elem.left_idx) {
+        trace(elem.left_idx, fd);
+    }
+}
+
+int
+main(int argc, char *argv[])
+{
+    int flags = O_RDONLY;
+    int fd = open(argv[1], flags);
+    trace(0, fd);
+    printf("\n");
+    close(fd);
+    return 0;
+}

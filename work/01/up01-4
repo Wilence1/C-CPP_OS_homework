@@ -1,0 +1,26 @@
+#include <stdio.h>
+enum { BUFFER_SIZE = 1024 };
+
+int 
+main(void)
+{
+    int n;
+    scanf("%d", &n);
+    double a[BUFFER_SIZE], b[BUFFER_SIZE];
+    for(int i = 0; i < n; i++){
+        scanf("%lf", &a[i]);
+        b[i] = a[i];
+    }
+    for(int i = 0; i < n - 1; i++){
+        for(int j = i + 1; j < n; j++){
+            if(a[i] < a[j]) {
+                double t = a[i];
+                a[i] = a[j];
+                a[j] = t;
+            }
+        }
+    }
+    for(int i = 0; i < n; i++){
+        printf("%d %.10g %.10g\n", i + 1, b[i], a[i]);
+    }
+}
